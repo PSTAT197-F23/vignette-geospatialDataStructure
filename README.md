@@ -10,5 +10,7 @@ Your repository should contain:
 4.  A script containing commented codes appearing in the vignette
 
 Resources:
+
 https://cengel.github.io/R-spatial/intro.html
+
 https://freegisdata.rtwilson.com/
