@@ -8,3 +8,7 @@ Your repository should contain:
 2.  A primary vignette document that explains methods and walks through implementation line-by-line (similar to an in-class or lab activity)
 3.  At least one example dataset
 4.  A script containing commented codes appearing in the vignette
+
+Resources:
+https://cengel.github.io/R-spatial/intro.html
+https://freegisdata.rtwilson.com/
