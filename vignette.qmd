@@ -13,7 +13,9 @@ knitr::opts_chunk$set(warning = FALSE, message = FALSE)
 The R-package we will be using for this demonstration is the "sf" package. It adopts the "Simple Features" formal standard, outlining a storage and access model for spatial geometries such as points, lines, and polygons. A geometry is considered simple when it comprises points connected by straight line segments and avoids self-intersections.
 
 ```{r, results='hide'}
-library("sf")
+library(sf)
+library(tidyverse)
+library(tidymodels)
 ```
 
 ## 1.2 Basic Spatial Structures in "sf"
@@ -54,13 +56,26 @@ Now we have a data-frame that associates an attribute to a spatial structure rat
 ## 2.1 Geospatial Dataframe
 
 ```{r}
+us_species <- read.csv("data/dat_species.csv")
+us_species <- us_species %>% 
+  filter(sciname == "Xenopus laevis")
 us_geo <- st_read("data/dat_spatial.csv")
+us_geo <- us_geo %>% 
+  filter(name != "Hawaii" & name != "Alaska")
+```
 
+```{r}
+colnames(us_geo)[1] <- "state"
+us_geo_merged <- merge(us_geo,us_species,by="state", all=T)
+names(us_geo_merged) 
+```
+
+```{r}
 # Assuming 'geometry' is a character vector with WKT representations
-us_geo$geometry <- as.character(us_geo$geometry)
+us_geo_merged$geometry <- as.character(us_geo_merged$geometry)
 
 # Create an sf object (SQ) from the WKT geometries
-SQ <- st_as_sf(us_geo, wkt = "geometry")
+SQ <- st_as_sf(us_geo_merged, wkt = "geometry")
 
 # Check the structure of SQ
 str(SQ)
@@ -68,5 +83,5 @@ str(SQ)
 
 ```{r}
 # Plot the result
-plot(SQ["name"])
+plot(SQ["occurrence"])
 ```
