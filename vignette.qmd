@@ -52,3 +52,21 @@ dfr <- data.frame(id = c("hwy1", "hwy2"),
 Now we have a data-frame that associates an attribute to a spatial structure rather than another data point!
 
 ## 2.1 Geospatial Dataframe
+
+```{r}
+us_geo <- st_read("data/dat_spatial.csv")
+
+# Assuming 'geometry' is a character vector with WKT representations
+us_geo$geometry <- as.character(us_geo$geometry)
+
+# Create an sf object (SQ) from the WKT geometries
+SQ <- st_as_sf(us_geo, wkt = "geometry")
+
+# Check the structure of SQ
+str(SQ)
+```
+
+```{r}
+# Plot the result
+plot(SQ["name"])
+```
