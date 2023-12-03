@@ -1,0 +1,54 @@
+---
+title: "An Introdution to Geospatial Data Structures"
+author: 'Yibo Liang, Pippa Lin, '
+date: December 3, 2023
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+```
+
+## 1.1 The "sf" Package
+
+The R-package we will be using for this demonstration is the "sf" package. It adopts the "Simple Features" formal standard, outlining a storage and access model for spatial geometries such as points, lines, and polygons. A geometry is considered simple when it comprises points connected by straight line segments and avoids self-intersections.
+
+```{r, results='hide'}
+library("sf")
+```
+
+## 1.2 Basic Spatial Structures in "sf"
+
+Some of the basic spatial objects that are in the "sf" package for dealing with vector spatial data include:
+
+-   points
+
+-   lines
+
+-   polygons
+
+### 1.2.1 Creating a "sf" object
+
+Let's create an example "sf" line object. First, we will define the lines themselves with `st_linestring()`
+
+```{r}
+lnstr_sfg1 <- st_linestring(matrix(runif(10), ncol=2)) # a line with 10 points
+lnstr_sfg2 <- st_linestring(matrix(runif(10), ncol=2)) # ncol = 2 specifies the dimension
+```
+
+Next, we will combine the two lines into a single feature before transforming it into a single "sf" object.
+
+```{r}
+(lnstr_sfc <- st_sfc(lnstr_sfg1, lnstr_sfg2)) # just one feature here
+```
+
+Now that we have 2 lines combined into a single feature, we haven't actually assigned any meaning to the 2 lines yet. Let's give them some attributes! Let's pretend that these two lines are a highway and we they each have an attribute \`car_per_hour\` describing the number of cars that travels through them every hour.
+
+```{r}
+dfr <- data.frame(id = c("hwy1", "hwy2"),
+                  cars_per_hour = c(78, 22)) 
+(lnstr_sf <- st_sf(dfr , lnstr_sfc)) # 2 lines each with an attribute cars_per_hour
+```
+
+Now we have a data-frame that associates an attribute to a spatial structure rather than another data point!
+
+## 2.1 Geospatial Dataframe
