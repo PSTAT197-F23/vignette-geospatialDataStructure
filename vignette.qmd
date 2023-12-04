@@ -16,6 +16,7 @@ The R-package we will be using for this demonstration is the "sf" package. It ad
 library(sf)
 library(tidyverse)
 library(tidymodels)
+library(leaflet) 
 ```
 
 ## 1.2 Basic Spatial Structures in "sf"
@@ -82,6 +83,33 @@ str(SQ)
 ```
 
 ```{r}
+library(RColorBrewer)
+pal <- brewer.pal(7, "OrRd") # we select 7 colors from the palette
+
 # Plot the result
-plot(SQ["occurrence"])
+
+plot(SQ["occurrence"], 
+     main = "occurance", 
+     breaks = "quantile", nbreaks = 7,
+     pal = pal)
+```
+
+```{r}
+leaflet(SQ) %>%
+  addPolygons()
+```
+
+```{r}
+pal_fun <- colorQuantile("YlOrRd", NULL, n = 5)
+
+p_popup <- paste0("<strong>Occurance Rate: </strong>", SQ$occurrence)
+```
+
+```{r}
+leaflet(SQ) %>%
+  addPolygons(
+    stroke = FALSE, # remove polygon borders
+    fillColor = ~pal_fun(occurrence), # set fill color with function from above and value
+    fillOpacity = 0.8, smoothFactor = 0.5, # make it nicer
+    popup = p_popup)  # add popup
 ```
