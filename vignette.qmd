@@ -57,10 +57,9 @@ Now we have a data-frame that associates an attribute to a spatial structure rat
 ## 2.1 Geospatial Dataframe
 
 ```{r}
-us_species <- read.csv("data/dat_species.csv")
-us_species <- us_species %>% 
-  filter(sciname == "Xenopus laevis")
-us_geo <- st_read("data/dat_spatial.csv")
+us_species <- read_csv("data/dat_species.csv")
+us_species <- us_species %>% filter(sciname == "Myocastor coypus" | sciname == "Hydrochoerus hydrochaeris")
+us_geo <- read_csv("data/dat_spatial.csv")
 us_geo <- us_geo %>% 
   filter(name != "Hawaii" & name != "Alaska")
 ```
@@ -72,8 +71,7 @@ names(us_geo_merged)
 ```
 
 ```{r}
-# Assuming 'geometry' is a character vector with WKT representations
-us_geo_merged$geometry <- as.character(us_geo_merged$geometry)
+us_geo_merged <- us_geo_merged[is.na(us_geo_merged$geometry) == FALSE, ]
 
 # Create an sf object (SQ) from the WKT geometries
 SQ <- st_as_sf(us_geo_merged, wkt = "geometry")
@@ -89,7 +87,7 @@ pal <- brewer.pal(7, "OrRd") # we select 7 colors from the palette
 # Plot the result
 
 plot(SQ["occurrence"], 
-     main = "occurance", 
+     main = "occurrence", 
      breaks = "quantile", nbreaks = 7,
      pal = pal)
 ```
