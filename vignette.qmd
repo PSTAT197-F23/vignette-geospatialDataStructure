@@ -16,6 +16,9 @@ The R-package we will be using for this demonstration is the "sf" package. It ad
 library(sf)
 library(tidyverse)
 library(tidymodels)
+library(ggplot2)
+library(dplyr)
+library(ggmap)
 library(leaflet) 
 ```
 
@@ -75,39 +78,31 @@ us_geo_merged <- us_geo_merged[is.na(us_geo_merged$geometry) == FALSE, ]
 
 # Create an sf object (SQ) from the WKT geometries
 SQ <- st_as_sf(us_geo_merged, wkt = "geometry")
+```
 
+```{r}
 # Check the structure of SQ
 str(SQ)
 ```
 
 ```{r}
-library(RColorBrewer)
-pal <- brewer.pal(7, "OrRd") # we select 7 colors from the palette
+# Select the years you want to include in the plot
+selected_years <- c(1956, 2013, 2015)  # Add the years you want
 
-# Plot the result
+# Filter the sf object based on selected years
+SQ_f <- SQ %>%
+  filter(year %in% selected_years)
 
-plot(SQ["occurrence"], 
-     main = "occurrence", 
-     breaks = "quantile", nbreaks = 7,
-     pal = pal)
-```
+# Create a ggplot object
+p <- ggplot() +
+  
+  # Add the filtered sf object as a layer
+  geom_sf(data = SQ["state"]) +
+  geom_sf(data = SQ_f, aes(fill = occurrence)) +
+  
+  # Customize the plot as needed
+  theme_minimal() +
+  labs(title = "Occurrences Plot")
 
-```{r}
-leaflet(SQ) %>%
-  addPolygons()
-```
-
-```{r}
-pal_fun <- colorQuantile("YlOrRd", NULL, n = 5)
-
-p_popup <- paste0("<strong>Occurance Rate: </strong>", SQ$occurrence)
-```
-
-```{r}
-leaflet(SQ) %>%
-  addPolygons(
-    stroke = FALSE, # remove polygon borders
-    fillColor = ~pal_fun(occurrence), # set fill color with function from above and value
-    fillOpacity = 0.8, smoothFactor = 0.5, # make it nicer
-    popup = p_popup)  # add popup
+p
 ```
