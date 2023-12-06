@@ -18,11 +18,7 @@ We can predict the number appearances of a species using spatial poisson model. 
 
 First, we use spatial weights matrix to represent the relationships between states. The matrix captures the neighbor states of the state we want to predict on, and their correlation:
 
-```{r. eval = FALSE}
-# Create spatial weights matrix 
-w <- knn2nb(knearneigh(st_coordinates(your_dataset))) 
-W <- nb2listw(w)
-```
+`{r. eval = FALSE} # Create spatial weights matrix  w <- knn2nb(knearneigh(st_coordinates(your_dataset)))  W <- nb2listw(w)`
 
 `st_coordinates()`: This extracts the coordinates from the 'geometry' column of the **`your_dataset`**. It gives a matrix containing the X and Y coordinates for each observation. If you have points, these will be the point coordinates; if you have polygons, these will be the centroid coordinates.
 
