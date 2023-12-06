@@ -1,6 +1,6 @@
 ---
 title: "An Introdution to Geospatial Data Structures"
-author: 'Yibo Liang, Pippa Lin, '
+author: 'Yibo Liang, Pippa Lin, Chris Zhao'
 date: December 3, 2023
 ---
 
@@ -57,14 +57,96 @@ dfr <- data.frame(id = c("hwy1", "hwy2"),
 
 Now we have a data-frame that associates an attribute to a spatial structure rather than another data point!
 
-## 2.1 Geospatial Dataframe
+```{r}
+ggplot() +
+  geom_sf(data = lnstr_sf["id"]) +
+    theme_minimal()
+```
+
+## 2.1 Using sf Objects to Record GeoSpatial Data
+
+Now that we understand how to create a sf object; let's demonstrate an sf object that contains geospatial meaning. Let's take 3 clusters of points a, b, and c and showcase the utility of the sf object.
+
+```{r, echo=FALSE}
+a_lat <- c(72.117, 71.05, 71.717, 71.167, 71.817, 72.333, 71.25, 70.917, 
+  70.85, 70.933)
+a_lon <- c(33.217, 30.333, 26.3, 22.333, 22.333, 22.333, 18.517, 20.133, 
+             21.333, 19.917)
+b_lat <- c(41.283333, 41, 40.95, 40.95, 38.683333, 40.783333, 40.733333, 
+            40.516667, 38.566667, 41.266667)
+b_lon <- c(-71.116667, -70.733333, -70.583333, -70.483333, -74.816667, 
+            -70.5, -70.566667, -70.266667, -74.85, -71.366667)
+c_lat <- c(58.015, 57.67167, 57.33833, 56.685, 56.99333, 57.31667, 57.65, 
+            57.99667, 58.32167, 58.33333)
+c_lon <- c(-158.31667, -158.36, -158.41, -159.76, -159.72333, -159.66333, 
+            -159.64167, -159.605, -159.54, -160.72167)
+a_dat <- data.frame(lat=a_lat, lon=a_lon)
+b_dat <- data.frame(lat=b_lat, lon=b_lon)
+c_dat <- data.frame(lat=c_lat, lon=c_lon)
+a_dat$cluster <- "a"
+b_dat$cluster <- "b"
+c_dat$cluster <- "c"
+dat <- rbind(a_dat, b_dat, c_dat)
+
+```
 
 ```{r}
-us_species <- read_csv("data/dat_species.csv")
-us_species <- us_species %>% filter(group == "Mammals"| group == "Reptiles" | group == "Amphibians" | group == "Amphibians-Frogs")
+ggplot(dat, aes(x = lon, y = lat, color = cluster)) +
+  geom_point() +
+  labs(title = "Scatter Plot of Clusters",
+       x = "Lon",
+       y = "Lat")
+```
+
+Using the sf package, we can then treat these cluster points as coordinate points and draw a polygon.
+
+```{r}
+shapes <- dat %>%
+  st_as_sf(coords = c("lon", "lat")) %>%
+  group_by(cluster) %>%
+  summarize(geometry = st_union(geometry)) %>%
+  st_convex_hull()
+plot(shapes)
+```
+
+## 2.2 Drawing Something Familiar
+
+Using everything we've discussed so far, let's draw a geospatial map. First we will load in a vector of coordinates.
+
+```{r, echo=FALSE}
 us_geo <- read_csv("data/dat_spatial.csv")
 us_geo <- us_geo %>% 
   filter(name != "Hawaii" & name != "Alaska")
+```
+
+```{r}
+us_geo
+```
+
+What we have just loaded in is a dataframe containing the 48 States (Sorry Hawaii and Alaska) and their latitudes and longitudes. However, a vector of coordinates is hard to manage and no one is going to understand what this string of numbers mean. Therefore, we can convert this vector data into geospatial data by creating a "sf" object.
+
+```{r}
+SQ_example <- st_as_sf(us_geo, wkt = "geometry")
+str(SQ_example)
+```
+
+Now, the `geometry` column has been converted into a geo spatial object. The reason why we want to use geospatial objects when dealing with geospatial data is instead of associating every state with a bunch of coordinate points, we give each state one geospatial object. In other words, each entry on in our dataframe is now associated with an area on Earth. In fact, it is easy to see if we just plot it out:
+
+```{r}
+ggplot() +
+  geom_sf(data = SQ_example["name"]) +
+    theme_minimal() +
+    labs(title = "Map of the U.S. Using sf Polygons")
+
+```
+
+The most powerful aspect of geospatial data is that we can give attributes to these individual objects.
+
+## 3.1 Geospatial Dataframe with Attributes
+
+```{r}
+us_species <- read_csv("data/dat_species.csv")
+us_species <- us_species %>% filter(group == "Mammals"| group == "Reptiles" | group == "Amphibians")
 ```
 
 ```{r}
@@ -95,7 +177,7 @@ SQ_f <- SQ %>%
   summarise(occurrence = sum(occurrence))
 
   # Create a ggplot object
-p <- ggplot() +
+ggplot() +
   # Add the filtered sf object as a layer
   geom_sf(data = SQ1["state"]) +
   geom_sf(data = SQ_f, aes(fill = occurrence)) +
@@ -103,6 +185,4 @@ p <- ggplot() +
   # Customize the plot as needed
   theme_minimal() +
     labs(title = "Occurrences Plot")
-
-p
 ```
