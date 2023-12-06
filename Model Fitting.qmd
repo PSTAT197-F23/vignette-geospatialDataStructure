@@ -18,7 +18,7 @@ We can predict the number appearances of a species using spatial poisson model. 
 
 First, we use spatial weights matrix to represent the relationships between states. The matrix captures the neighbor states of the state we want to predict on, and their correlation:
 
-```{r}
+```{r. eval = FALSE}
 # Create spatial weights matrix
 w <- knn2nb(knearneigh(st_coordinates(your_dataset)))
 W <- nb2listw(w)
@@ -36,7 +36,7 @@ W <- nb2listw(w)
 
 Now, we can fit a spatial Poisson on the dataset
 
-```{r}
+```{r,  eval = FALSE}
 spatial_poisson_model <- errorsarlm(count ~ 1, data = frog_data_sf, W = W, family = poisson)
 ```
 
@@ -46,7 +46,7 @@ spatial_poisson_model <- errorsarlm(count ~ 1, data = frog_data_sf, W = W, famil
 
 #### 3. Prediction
 
-```{r}
+```{r,  eval = FALSE}
 # Predict occurrences using the spatial Poisson model
 predictions <- predict(spatial_poisson_model, newdata = new_data, type = "response")
 ```
