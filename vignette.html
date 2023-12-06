@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.335">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Yibo Liang, Pippa Lin, Chris Zhao">
+<meta name="dcterms.date" content="2023-12-03">
+
+<title>An Introdution to Geospatial Data Structures</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<script src="vignette_files/libs/clipboard/clipboard.min.js"></script>
+<script src="vignette_files/libs/quarto-html/quarto.js"></script>
+<script src="vignette_files/libs/quarto-html/popper.min.js"></script>
+<script src="vignette_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="vignette_files/libs/quarto-html/anchor.min.js"></script>
+<link href="vignette_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="vignette_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="vignette_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="vignette_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="vignette_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">An Introdution to Geospatial Data Structures</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Yibo Liang, Pippa Lin, Chris Zhao </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">December 3, 2023</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="the-sf-package" class="level2">
+<h2 class="anchored" data-anchor-id="the-sf-package">1.1 The “sf” Package</h2>
+<p>The R-package we will be using for this demonstration is the “sf” package. It adopts the “Simple Features” formal standard, outlining a storage and access model for spatial geometries such as points, lines, and polygons. A geometry is considered simple when it comprises points connected by straight line segments and avoids self-intersections.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggmap)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(leaflet) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="basic-spatial-structures-in-sf" class="level2">
+<h2 class="anchored" data-anchor-id="basic-spatial-structures-in-sf">1.2 Basic Spatial Structures in “sf”</h2>
+<p>Some of the basic spatial objects that are in the “sf” package for dealing with vector spatial data include:</p>
+<ul>
+<li><p>points</p></li>
+<li><p>lines</p></li>
+<li><p>polygons</p></li>
+</ul>
+<section id="creating-a-sf-object" class="level3">
+<h3 class="anchored" data-anchor-id="creating-a-sf-object">1.2.1 Creating a “sf” object</h3>
+<p>Let’s create an example “sf” line object. First, we will define the lines themselves with <code>st_linestring()</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>lnstr_sfg1 <span class="ot">&lt;-</span> <span class="fu">st_linestring</span>(<span class="fu">matrix</span>(<span class="fu">runif</span>(<span class="dv">10</span>), <span class="at">ncol=</span><span class="dv">2</span>)) <span class="co"># a line with 10 points</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>lnstr_sfg2 <span class="ot">&lt;-</span> <span class="fu">st_linestring</span>(<span class="fu">matrix</span>(<span class="fu">runif</span>(<span class="dv">10</span>), <span class="at">ncol=</span><span class="dv">2</span>)) <span class="co"># ncol = 2 specifies the dimension</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Next, we will combine the two lines into a single feature before transforming it into a single “sf” object.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>(lnstr_sfc <span class="ot">&lt;-</span> <span class="fu">st_sfc</span>(lnstr_sfg1, lnstr_sfg2)) <span class="co"># just one feature here</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Geometry set for 2 features 
+Geometry type: LINESTRING
+Dimension:     XY
+Bounding box:  xmin: 0.02398291 ymin: 0.06011857 xmax: 0.8518111 ymax: 0.8768601
+CRS:           NA</code></pre>
+</div>
+</div>
+<p>Now that we have 2 lines combined into a single feature, we haven’t actually assigned any meaning to the 2 lines yet. Let’s give them some attributes! Let’s pretend that these two lines are a highway and we they each have an attribute `car_per_hour` describing the number of cars that travels through them every hour.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>dfr <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">id =</span> <span class="fu">c</span>(<span class="st">"hwy1"</span>, <span class="st">"hwy2"</span>),</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">cars_per_hour =</span> <span class="fu">c</span>(<span class="dv">78</span>, <span class="dv">22</span>)) </span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>(lnstr_sf <span class="ot">&lt;-</span> <span class="fu">st_sf</span>(dfr , lnstr_sfc)) <span class="co"># 2 lines each with an attribute cars_per_hour</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Simple feature collection with 2 features and 2 fields
+Geometry type: LINESTRING
+Dimension:     XY
+Bounding box:  xmin: 0.02398291 ymin: 0.06011857 xmax: 0.8518111 ymax: 0.8768601
+CRS:           NA
+    id cars_per_hour                      lnstr_sfc
+1 hwy1            78 LINESTRING (0.502105 0.2609...
+2 hwy2            22 LINESTRING (0.6133719 0.840...</code></pre>
+</div>
+</div>
+<p>Now we have a data-frame that associates an attribute to a spatial structure rather than another data point!</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> lnstr_sf[<span class="st">"id"</span>]) <span class="sc">+</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="vignette_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="using-sf-objects-to-record-geospatial-data" class="level2">
+<h2 class="anchored" data-anchor-id="using-sf-objects-to-record-geospatial-data">2.1 Using sf Objects to Record GeoSpatial Data</h2>
+<p>Now that we understand how to create a sf object; let’s demonstrate an sf object that contains geospatial meaning. Let’s take 3 clusters of points a, b, and c and showcase the utility of the sf object.</p>
+<div class="cell">
+
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(dat, <span class="fu">aes</span>(<span class="at">x =</span> lon, <span class="at">y =</span> lat, <span class="at">color =</span> cluster)) <span class="sc">+</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Scatter Plot of Clusters"</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Lon"</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Lat"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="vignette_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Using the sf package, we can then treat these cluster points as coordinate points and draw a polygon.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>shapes <span class="ot">&lt;-</span> dat <span class="sc">%&gt;%</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"lon"</span>, <span class="st">"lat"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(cluster) <span class="sc">%&gt;%</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">geometry =</span> <span class="fu">st_union</span>(geometry)) <span class="sc">%&gt;%</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_convex_hull</span>()</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(shapes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="vignette_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="drawing-something-familiar" class="level2">
+<h2 class="anchored" data-anchor-id="drawing-something-familiar">2.2 Drawing Something Familiar</h2>
+<p>Using everything we’ve discussed so far, let’s draw a geospatial map. First we will load in a vector of coordinates.</p>
+<div class="cell">
+
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>us_geo</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 48 × 3
+   name        geometry                                                 iso_code
+   &lt;chr&gt;       &lt;chr&gt;                                                    &lt;chr&gt;   
+ 1 Alabama     MULTIPOLYGON (((-88.053375 30.506987, -88.0510879999999… US-AL   
+ 2 Arizona     POLYGON ((-114.816294 32.508038, -114.814321 32.509023,… US-AZ   
+ 3 Arkansas    POLYGON ((-94.6178329666013 36.4994141203285, -94.61764… US-AR   
+ 4 California  MULTIPOLYGON (((-118.604415 33.478552, -118.598783 33.4… US-CA   
+ 5 Colorado    POLYGON ((-109.060253 38.599328, -109.059541 38.719888,… US-CO   
+ 6 Connecticut MULTIPOLYGON (((-72.761427 41.242333, -72.759733 41.248… US-CT   
+ 7 Delaware    MULTIPOLYGON (((-75.565546 39.51485, -75.56174299999999… US-DE   
+ 8 Florida     MULTIPOLYGON (((-80.176276 25.525054, -80.1739499999999… US-FL   
+ 9 Georgia     MULTIPOLYGON (((-81.27939099999999 31.30792, -81.277159… US-GA   
+10 Idaho       POLYGON ((-117.242675 44.396548, -117.234835 44.399669,… US-ID   
+# ℹ 38 more rows</code></pre>
+</div>
+</div>
+<p>What we have just loaded in is a dataframe containing the 48 States (Sorry Hawaii and Alaska) and their latitudes and longitudes. However, a vector of coordinates is hard to manage and no one is going to understand what this string of numbers mean. Therefore, we can convert this vector data into geospatial data by creating a “sf” object.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>SQ_example <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(us_geo, <span class="at">wkt =</span> <span class="st">"geometry"</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(SQ_example)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>sf [48 × 3] (S3: sf/spec_tbl_df/tbl_df/tbl/data.frame)
+ $ name    : chr [1:48] "Alabama" "Arizona" "Arkansas" "California" ...
+ $ geometry:sfc_GEOMETRY of length 48; first list element: List of 7
+  ..$ :List of 1
+  .. ..$ : num [1:15, 1:2] -88.1 -88.1 -88 -88 -88 ...
+  ..$ :List of 1
+  .. ..$ : num [1:9, 1:2] -88.2 -88.2 -88.2 -88.2 -88.2 ...
+  ..$ :List of 1
+  .. ..$ : num [1:7, 1:2] -88.2 -88.2 -88.2 -88.2 -88.2 ...
+  ..$ :List of 1
+  .. ..$ : num [1:57, 1:2] -88.3 -88.3 -88.3 -88.3 -88.3 ...
+  ..$ :List of 1
+  .. ..$ : num [1:74, 1:2] -88.3 -88.3 -88.3 -88.3 -88.3 ...
+  ..$ :List of 1
+  .. ..$ : num [1:17, 1:2] -88.3 -88.3 -88.3 -88.3 -88.3 ...
+  ..$ :List of 1
+  .. ..$ : num [1:1730, 1:2] -88.5 -88.5 -88.5 -88.5 -88.5 ...
+  ..- attr(*, "class")= chr [1:3] "XY" "MULTIPOLYGON" "sfg"
+ $ iso_code: chr [1:48] "US-AL" "US-AZ" "US-AR" "US-CA" ...
+ - attr(*, "spec")=
+  .. cols(
+  ..   name = col_character(),
+  ..   geometry = col_character(),
+  ..   iso_code = col_character()
+  .. )
+ - attr(*, "problems")=&lt;externalptr&gt; 
+ - attr(*, "sf_column")= chr "geometry"
+ - attr(*, "agr")= Factor w/ 3 levels "constant","aggregate",..: NA NA
+  ..- attr(*, "names")= chr [1:2] "name" "iso_code"</code></pre>
+</div>
+</div>
+<p>Now, the <code>geometry</code> column has been converted into a geo spatial object. The reason why we want to use geospatial objects when dealing with geospatial data is instead of associating every state with a bunch of coordinate points, we give each state one geospatial object. In other words, each entry on in our dataframe is now associated with an area on Earth. In fact, it is easy to see if we just plot it out:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> SQ_example[<span class="st">"name"</span>]) <span class="sc">+</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Map of the U.S. Using sf Polygons"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="vignette_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>The most powerful aspect of geospatial data is that we can give attributes to these individual objects.</p>
+</section>
+<section id="geospatial-dataframe-with-attributes" class="level2">
+<h2 class="anchored" data-anchor-id="geospatial-dataframe-with-attributes">3.1 Geospatial Dataframe with Attributes</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>us_species <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/dat_species.csv"</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>us_species <span class="ot">&lt;-</span> us_species <span class="sc">%&gt;%</span> <span class="fu">filter</span>(group <span class="sc">==</span> <span class="st">"Mammals"</span><span class="sc">|</span> group <span class="sc">==</span> <span class="st">"Reptiles"</span> <span class="sc">|</span> group <span class="sc">==</span> <span class="st">"Amphibians"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(us_geo)[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="st">"state"</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>us_geo_merged <span class="ot">&lt;-</span> <span class="fu">merge</span>(us_geo,us_species,<span class="at">by=</span><span class="st">"state"</span>, <span class="at">all=</span>T)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(us_geo_merged) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "state"        "geometry"     "iso_code"     "occurrence"   "sciname"     
+ [6] "kingdom"      "group"        "family"       "nativeregion" "centroid"    
+[11] "decimalLat"   "decimalLon"   "dateobserved" "year"         "collector"   
+[16] "recordedBy"   "huc8skm"      "huc10skm"     "huc12skm"    </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>us_geo_merged <span class="ot">&lt;-</span> us_geo_merged[<span class="fu">is.na</span>(us_geo_merged<span class="sc">$</span>geometry) <span class="sc">==</span> <span class="cn">FALSE</span>, ]</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Create an sf object (SQ) from the WKT geometries</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>SQ <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(us_geo_merged, <span class="at">wkt =</span> <span class="st">"geometry"</span>)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>SQ1 <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(us_geo, <span class="at">wkt =</span> <span class="st">"geometry"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check the structure of SQ</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(SQ)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Classes 'sf' and 'data.frame':  1872 obs. of  19 variables:
+ $ state       : chr  "Alabama" "Alabama" "Alabama" "Alabama" ...
+ $ iso_code    : chr  "US-AL" "US-AL" "US-AL" "US-AL" ...
+ $ occurrence  : num  8.91e+08 6.24e+08 6.24e+08 6.24e+08 NA ...
+ $ sciname     : chr  "Myocastor coypus" "Myocastor coypus" "Myocastor coypus" "Myocastor coypus" ...
+ $ kingdom     : chr  "Animal" "Animal" "Animal" "Animal" ...
+ $ group       : chr  "Mammals" "Mammals" "Mammals" "Mammals" ...
+ $ family      : chr  "Myocastoridae" "Myocastoridae" "Myocastoridae" "Myocastoridae" ...
+ $ nativeregion: chr  NA NA NA NA ...
+ $ centroid    : chr  "N" "N" "N" "N" ...
+ $ decimalLat  : num  30.7 30.7 30.8 30.7 NA ...
+ $ decimalLon  : num  -87.9 -88.1 -87.8 -87.9 NA ...
+ $ dateobserved: chr  NA NA NA NA ...
+ $ year        : num  2013 1956 1956 1949 NA ...
+ $ collector   : chr  "iNaturalist research-grade observations" "United States Geological Survey Nonindigenous Aquatic Species Database" "United States Geological Survey Nonindigenous Aquatic Species Database" "United States Geological Survey Nonindigenous Aquatic Species Database" ...
+ $ recordedBy  : chr  "Michael P. Riggs" NA NA NA ...
+ $ huc8skm     : num  2363 2363 2384 2363 NA ...
+ $ huc10skm    : num  393 393 672 393 NA ...
+ $ huc12skm    : num  150.3 76.9 128 150.3 NA ...
+ $ geometry    :sfc_GEOMETRY of length 1872; first list element: List of 7
+  ..$ :List of 1
+  .. ..$ : num [1:15, 1:2] -88.1 -88.1 -88 -88 -88 ...
+  ..$ :List of 1
+  .. ..$ : num [1:9, 1:2] -88.2 -88.2 -88.2 -88.2 -88.2 ...
+  ..$ :List of 1
+  .. ..$ : num [1:7, 1:2] -88.2 -88.2 -88.2 -88.2 -88.2 ...
+  ..$ :List of 1
+  .. ..$ : num [1:57, 1:2] -88.3 -88.3 -88.3 -88.3 -88.3 ...
+  ..$ :List of 1
+  .. ..$ : num [1:74, 1:2] -88.3 -88.3 -88.3 -88.3 -88.3 ...
+  ..$ :List of 1
+  .. ..$ : num [1:17, 1:2] -88.3 -88.3 -88.3 -88.3 -88.3 ...
+  ..$ :List of 1
+  .. ..$ : num [1:1730, 1:2] -88.5 -88.5 -88.5 -88.5 -88.5 ...
+  ..- attr(*, "class")= chr [1:3] "XY" "MULTIPOLYGON" "sfg"
+ - attr(*, "sf_column")= chr "geometry"
+ - attr(*, "agr")= Factor w/ 3 levels "constant","aggregate",..: NA NA NA NA NA NA NA NA NA NA ...
+  ..- attr(*, "names")= chr [1:18] "state" "iso_code" "occurrence" "sciname" ...</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(us_geo_merged<span class="sc">$</span>sciname)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "Myocastor coypus"               NA                              
+ [3] "Hydrochoerus hydrochaeris"      "Osteopilus septentrionalis"    
+ [5] "Acrochordus javanicus"          "Eunectes notaeus"              
+ [7] "Caiman crocodilus"              "Eleutherodactylus planirostris"
+ [9] "Xenopus laevis"                 "Bombina orientalis"            </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>SQ_f <span class="ot">&lt;-</span> SQ <span class="sc">%&gt;%</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(sciname <span class="sc">==</span> <span class="st">"Hydrochoerus hydrochaeris"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">&lt;=</span> <span class="dv">2015</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(state) <span class="sc">%&gt;%</span> </span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">occurrence =</span> <span class="fu">sum</span>(occurrence))</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Create a ggplot object</span></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add the filtered sf object as a layer</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> SQ1[<span class="st">"state"</span>]) <span class="sc">+</span></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> SQ_f, <span class="fu">aes</span>(<span class="at">fill =</span> occurrence)) <span class="sc">+</span></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Customize the plot as needed</span></span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Occurrences Plot"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="vignette_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

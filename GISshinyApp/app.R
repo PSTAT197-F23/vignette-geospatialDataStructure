@@ -9,7 +9,7 @@ library(ggplot2)
 library(dplyr)
 
 us_species <- read_csv('./dat_species.csv')
-us_species <- us_species %>% filter(group == "Mammals"| group == "Reptiles" | group == "Amphibians")
+us_species <- us_species %>% filter(group == "Mammals"| group == "Reptiles")
 us_geo <- read_csv("./dat_spatial.csv")
 us_geo <- us_geo %>% 
   filter(name != "Hawaii" & name != "Alaska")
@@ -29,7 +29,7 @@ SQ1 <- st_as_sf(us_geo, wkt = "geometry")
 ui <- fluidPage(
 
     # Application title
-    titlePanel("Occurances of Myocastor coypus and Hydrochoerus hydrochaeris"),
+    titlePanel("Occurances Reptiles, Mammals, and Amphibians"),
 
     # Sidebar with a slider input for 
     sidebarLayout(
