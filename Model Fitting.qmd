@@ -50,3 +50,7 @@ spatial_poisson_model <- errorsarlm(count ~ 1, data = frog_data_sf, W = W, famil
 # Predict occurrences using the spatial Poisson model
 predictions <- predict(spatial_poisson_model, newdata = new_data, type = "response")
 ```
+
+More information:
+
+<https://apwheele.github.io/Class_CrimeMapping/08_Tutorial_R_SpatRegression.html>
