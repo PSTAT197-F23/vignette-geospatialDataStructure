@@ -16,3 +16,7 @@ https://cengel.github.io/R-spatial/intro.html
 https://freegisdata.rtwilson.com/
 
 https://stackoverflow.com/questions/69638192/draw-polygons-around-coordinates-in-r
+
+ShinyApp:
+
+https://yibster.shinyapps.io/gisshinyapp/
