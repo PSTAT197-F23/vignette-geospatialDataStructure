@@ -5,6 +5,6 @@ account: yibster
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 10726138
-bundleId: 8011792
+bundleId: 8012763
 url: https://yibster.shinyapps.io/gisshinyapp/
 version: 1
