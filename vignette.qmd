@@ -228,7 +228,11 @@ We can predict the number appearances of a species using spatial poisson model. 
 
 First, we use spatial weights matrix to represent the relationships between states. The matrix captures the neighbor states of the state we want to predict on, and their correlation:
 
-`{r. eval = FALSE} # Create spatial weights matrix  w <- knn2nb(knearneigh(st_coordinates(your_dataset)))  W <- nb2listw(w)`
+```{r, eval = FLASE}
+# Create spatial weights matrix  
+w <- knn2nb(knearneigh(st_coordinates(your_dataset)))  
+W <- nb2listw(w)`
+```
 
 `st_coordinates()`: This extracts the coordinates from the 'geometry' column of the **`your_dataset`**. It gives a matrix containing the X and Y coordinates for each observation. If you have points, these will be the point coordinates; if you have polygons, these will be the centroid coordinates.
 
@@ -253,6 +257,9 @@ spatial_poisson_model <- errorsarlm(count ~ 1, data = frog_data_sf, W = W, famil
 predictions <- predict(spatial_poisson_model, newdata = new_data, type = "response")
 ```
 
-More information:
+For more information, refer to this link:
 
 <https://apwheele.github.io/Class_CrimeMapping/08_Tutorial_R_SpatRegression.html>
+
+### Conclusion:
+In conclusion, this vignette introduced the geospatial data structure, the "sf" package in R, and modeling for geospatial data. We explored the creation of spatial structures using "sf" objects and highlighted their ability to efficiently represent real-world scenarios with attributes. In our example of invasive species in the U.S., we showed how geospatial data allows us to associated the invasive species to a location with a high dimensional vector object, and how to visualize the result. In the end, we provided a simple example of building Poisson model for predicting counts in a specific location using geospatial data structure. As geospatial data structures may be unfamiliar to many, we briefly touched on modeling, but we invite you to enhance your understanding by creating and experimenting with a simple geospatial dataset.
