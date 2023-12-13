@@ -1,0 +1,49 @@
+---
+title: "Lattice Modeling"
+format: html
+editor: visual
+---
+
+## Spatial Poisson Model
+
+```{r}
+library(sf)
+library(spdep)
+library(ggplot2)
+```
+
+We can predict the number appearances of a species using spatial poisson model. Here we will explain how it works and provide some example codes about the model building, you can copy and paste them to try!
+
+#### **1. Model Preparation**
+
+First, we use spatial weights matrix to represent the relationships between states. The matrix captures the neighbor states of the state we want to predict on, and their correlation:
+
+`{r. eval = FALSE} # Create spatial weights matrix  w <- knn2nb(knearneigh(st_coordinates(your_dataset)))  W <- nb2listw(w)`
+
+`st_coordinates()`: This extracts the coordinates from the 'geometry' column of the **`your_dataset`**. It gives a matrix containing the X and Y coordinates for each observation. If you have points, these will be the point coordinates; if you have polygons, these will be the centroid coordinates.
+
+`knearneigh()`: This function computes the k-nearest neighbors for each point based on Euclidean distance. It returns a "knn" object that represents the k-nearest neighbors relationships. The **`k`** parameter is not specified in this code.
+
+`nb2listw()`: This function converts the knn object into a spatial weights matrix using a k-nearest neighbor rule. It creates a binary spatial weights matrix where neighboring points are considered neighbors. The resulting object **`w`** is a representation of the neighborhood relationships among the observations.
+
+
+#### **2. Model Building**
+
+Now, we can fit a spatial Poisson on the dataset
+
+```{r,  eval = FALSE}
+spatial_poisson_model <- errorsarlm(count ~ 1, data = frog_data_sf, W = W, family = poisson)
+```
+
+**`W = W:`** It means the spatial weights matrix to account for spatial autocorrelation, in this case W is generated from knn.
+
+#### 3. Prediction
+
+```{r,  eval = FALSE}
+# Predict occurrences using the spatial Poisson model
+predictions <- predict(spatial_poisson_model, newdata = new_data, type = "response")
+```
+
+More information:
+
+<https://apwheele.github.io/Class_CrimeMapping/08_Tutorial_R_SpatRegression.html>
