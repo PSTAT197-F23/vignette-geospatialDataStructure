@@ -8,7 +8,9 @@ date: December 3, 2023
 knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
 ```
 
-## 1.1 The "sf" Package
+## Abstract
+
+## 1. The "sf" Package
 
 The R-package we will be using for this demonstration is the "sf" package. It adopts the "Simple Features" formal standard, outlining a storage and access model for spatial geometries such as points, lines, and polygons. A geometry is considered simple when it comprises points connected by straight line segments and avoids self-intersections.
 
@@ -22,7 +24,7 @@ library(ggmap)
 library(leaflet) 
 ```
 
-## 1.2 Basic Spatial Structures in "sf"
+### 1.1 Basic Spatial Structures in "sf"
 
 Some of the basic spatial objects that are in the "sf" package for dealing with vector spatial data include:
 
@@ -36,7 +38,7 @@ Some of the basic spatial objects that are in the "sf" package for dealing with 
 
 A simple feature object is stored as a "sf" object. The image above is a visualization of the "sf" objects.
 
-### 1.2.1 Creating a "sf" object
+### 1.2 Creating a "sf" object
 
 Let's create an example "sf" line object. A line object is characterized by points in some coordinate space and connected by a chord we call line.
 
@@ -69,9 +71,17 @@ ggplot() +
     theme_minimal()
 ```
 
-## 2.1 Using sf Objects to Record GeoSpatial Data
+## 2. Using sf Objects to Record GeoSpatial Polygons
 
-Now that we understand how to create a sf object; let's demonstrate an sf object that contains geospatial meaning. Let's take 3 clusters of points a, b, and c and showcase the utility of the sf object.
+With Geospatial Data structures, one can give geographical meaning to their data.
+
+![](images/800px-RTree-Visualization-3D.svg.png)
+
+We will explore two simple ways to record geospatial data. Two dimensional polygons using border data and 2 dimension polygons using centroid data.
+
+### 2.1 2D Polygons using Vector (Border) Data
+
+Now that we understand how to create a sf object; let's demonstrate an sf object that contains geospatial meaning. Let's take 3 clusters of vector points a, b, and c and showcase the utility of the sf object.
 
 ```{r, echo=FALSE}
 a_lat <- c(72.117, 71.05, 71.717, 71.167, 71.817, 72.333, 71.25, 70.917, 
@@ -104,11 +114,11 @@ ggplot(dat, aes(x = lon, y = lat, color = cluster)) +
        y = "Lat")
 ```
 
-Looking at the points above, there is clear some implicit relationship between the point clusters. However, it would be incredibly difficult to identify the cluster if there were more points and more variables.![](images/800px-RTree-Visualization-3D.svg.png)
+Looking at the points above, there is clear some implicit relationship between the point clusters. However, it would be incredibly difficult to identify the cluster if there were more points and more variables.
 
 Location gets increasingly difficult to keep track of as we get higher and higher dimensions in our dataframe. In fact, if the variables are in $\mathbb{R}^n$ then points will be n-dimensional, lines will be $n^2$-dimensional, and n-dimensional geometries will be $n^n$ dimensional. The dimension will get out of hand extremely quickly. Therefore, instead of keeping every coordinate of the location, we can keep the geometries themselves as objects in the dataframe.
 
-Going back to the previous example, using the sf package, we can then treat these cluster points as coordinate points and draw a polygon.
+Going back to the previous example, using the sf package, we can then treat these cluster points as coordinate points and draw a polygon. The reason why we call is the border points is that these vectors quite literally drawing the borders of the area that encapsulates the data points.
 
 ```{r}
 shapes <- dat %>%
@@ -119,9 +129,33 @@ shapes <- dat %>%
 plot(shapes)
 ```
 
-Originally, we had 30 data points each with 2 dimensions. After converting these data points into "sf" objects, we only have 3 data point; however, each data point contains 10 locations.
+Originally, we had 30 data points each with 2 dimensions. After converting these data points into "sf" objects, we only have 3 data point; however, each data point contains 10 locations. The datapoints are recorded as 2D polygons.
 
-## 2.2 Using the sf Object on a GeoSpatial Dataframe
+### 2.2 2D Polygons Using Centroids
+
+The first method is useful for when we want to group data points. The Centroid method is more useful for when we want to separate the data. Consider the following cluster:
+
+```{r}
+# Generate some centroids
+centroids <- st_make_grid(what="centers") %>% st_sf()
+plot(centroids)
+```
+
+Centroid polygons are useful for when we want to distinguish individual data points in a dense cluster like the one above. We can define a border for each point and we are able to effectively separate the points.
+
+```{r}
+# Make a new grid from them
+cellSize <- 10
+grid <- (st_bbox(centroids) + cellSize/2*c(-1,-1,1,1)) %>%
+  st_make_grid(cellsize=c(cellSize, cellSize)) %>% st_sf()
+
+ggplot() + geom_sf(data=grid) + geom_sf(data=centroids)
+
+```
+
+TL:DR, we have gone over two techniques in storing geospatial data. Cluster grouping condenses the dataframe into 2D polygons; on the other hand, drawing polygons around centroids expands the dataframe into 2D polygons.
+
+## 3. Creating a 2D Polygon on Real Data
 
 Using everything we've discussed so far, let's draw a geospatial map. First we will load in a vector of coordinates.
 
@@ -153,9 +187,9 @@ ggplot() +
     labs(title = "Map of the U.S. Using sf Polygons")
 ```
 
-Here, we want to stress how powerful geospatial data structures are when we want to perform visualizations. It takes a significantly less amount of computing power to plot 58 objects as compared to plotting hundreds of thousands of data points/
+Here, we want to stress how powerful geospatial data structures are when we want to perform visualizations. It takes a significantly less amount of computing power to plot 58 objects as compared to plotting hundreds of thousands of data points.
 
-## 3.1 Geospatial Dataframe with Attributes
+### 3.1 Geospatial Dataframe with Attributes
 
 The most important aspect of geospatial data is that we can give attributes to these individual objects. Let's load in a dataframe consisting of invasive mammals, reptiles, and amphibians in the U.S. from 1950's to the 2000's.
 
@@ -214,7 +248,7 @@ ggplot() +
 
 As one can see the prowess of "sf" objects is extremely great in the context of visualization. Each location is treated as an individual data point; thus, we are filtering and parse the data in terms of the locations themselves. In addition to having a structural advantage compared to their vector counter parts, the time it takes to process "sf" objects is also significantly faster. In order to demonstrate this, we have created a simple [ShinyApp](https://yibster.shinyapps.io/gisshinyapp/) to illustrate the use of geospatial data structures in data visualization.
 
-## 4.1 Modeling with Geospatial Data: Spatial Poisson Model
+## 4. Modeling with Geospatial Data: Spatial Poisson Model
 
 ```{r}
 library(sf)
@@ -224,7 +258,7 @@ library(ggplot2)
 
 We can predict the number appearances of a species using spatial poisson model. Here we will explain how it works and provide some example codes about the model building, you can copy and paste them to try!
 
-### 4.1.2 Model Preparation
+### 4.1 Model Preparation
 
 First, we use spatial weights matrix to represent the relationships between states. The matrix captures the neighbor states of the state we want to predict on, and their correlation:
 
@@ -240,7 +274,7 @@ W <- nb2listw(w)`
 
 `nb2listw()`: This function converts the knn object into a spatial weights matrix using a k-nearest neighbor rule. It creates a binary spatial weights matrix where neighboring points are considered neighbors. The resulting object **`w`** is a representation of the neighborhood relationships among the observations.
 
-### 4.1.2 Model Building
+### 4.2 Model Building
 
 Now, we can fit a spatial Poisson on the dataset
 
@@ -250,7 +284,7 @@ spatial_poisson_model <- errorsarlm(count ~ 1, data = frog_data_sf, W = W, famil
 
 **`W = W:`** It means the spatial weights matrix to account for spatial autocorrelation, in this case W is generated from knn.
 
-### 4.1.3 Prediction
+### 4.3 Prediction
 
 ```{r,  eval = FALSE}
 # Predict occurrences using the spatial Poisson model
@@ -262,4 +296,5 @@ For more information, refer to this link:
 <https://apwheele.github.io/Class_CrimeMapping/08_Tutorial_R_SpatRegression.html>
 
 ### Conclusion:
+
 In conclusion, this vignette introduced the geospatial data structure, the "sf" package in R, and modeling for geospatial data. We explored the creation of spatial structures using "sf" objects and highlighted their ability to efficiently represent real-world scenarios with attributes. In our example of invasive species in the U.S., we showed how geospatial data allows us to associated the invasive species to a location with a high dimensional vector object, and how to visualize the result. In the end, we provided a simple example of building Poisson model for predicting counts in a specific location using geospatial data structure. As geospatial data structures may be unfamiliar to many, we briefly touched on modeling, but we invite you to enhance your understanding by creating and experimenting with a simple geospatial dataset.

@@ -116,3 +116,15 @@ ggplot() +
   # Customize the plot as needed
   theme_minimal() +
   labs(title = "Occurrences Plot")
+
+# Centroid points
+
+# Generate some centroids
+centroids <- st_make_grid(what="centers") %>% st_sf()
+
+# Make a new grid from them
+cellSize <- 10
+grid <- (st_bbox(centroids) + cellSize/2*c(-1,-1,1,1)) %>%
+  st_make_grid(cellsize=c(cellSize, cellSize)) %>% st_sf()
+
+ggplot() + geom_sf(data=grid) + geom_sf(data=centroids)
