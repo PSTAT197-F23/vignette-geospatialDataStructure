@@ -34,7 +34,7 @@ Some of the basic spatial objects that are in the "sf" package for dealing with 
 
 ![](images/geomtry.png)
 
-A simple feature object is stored as a "sf" object. The image above is a visualization of the "sf" objects.s
+A simple feature object is stored as a "sf" object. The image above is a visualization of the "sf" objects.
 
 ### 1.2.1 Creating a "sf" object
 
@@ -106,7 +106,7 @@ ggplot(dat, aes(x = lon, y = lat, color = cluster)) +
 
 Looking at the points above, there is clear some implicit relationship between the point clusters. However, it would be incredibly difficult to identify the cluster if there were more points and more variables.![](images/800px-RTree-Visualization-3D.svg.png)
 
-Location gets increasingly difficult to keep track of as we get higher and higher dimensions in our dataframe. In fact, if the variables are in $$\mathbb{R}^n$$ then points will be n-dimensional, lines will be $$n^2$$-dimensional, and n-dimensional geometries will be $$n^n$$ dimensional. The dimension will get out of hand extremely quickly. Therefore, instead of keeping every coordinate of the location, we can keep the geometries themselves as objects in the dataframe.
+Location gets increasingly difficult to keep track of as we get higher and higher dimensions in our dataframe. In fact, if the variables are in $\mathbb{R}^n$ then points will be n-dimensional, lines will be $n^2$-dimensional, and n-dimensional geometries will be $n^n$ dimensional. The dimension will get out of hand extremely quickly. Therefore, instead of keeping every coordinate of the location, we can keep the geometries themselves as objects in the dataframe.
 
 Going back to the previous example, using the sf package, we can then treat these cluster points as coordinate points and draw a polygon.
 
@@ -151,7 +151,6 @@ ggplot() +
   geom_sf(data = SQ_example["name"]) +
     theme_minimal() +
     labs(title = "Map of the U.S. Using sf Polygons")
-
 ```
 
 Here, we want to stress how powerful geospatial data structures are when we want to perform visualizations. It takes a significantly less amount of computing power to plot 58 objects as compared to plotting hundreds of thousands of data points/
@@ -257,5 +256,3 @@ predictions <- predict(spatial_poisson_model, newdata = new_data, type = "respon
 More information:
 
 <https://apwheele.github.io/Class_CrimeMapping/08_Tutorial_R_SpatRegression.html>
-
-## 4.2 Modeling on Our Capybara Data
