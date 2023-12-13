@@ -99,6 +99,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <link href="vignette_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="vignette_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 </head>
 
@@ -158,9 +159,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><p>lines</p></li>
 <li><p>polygons</p></li>
 </ul>
+<p><img src="images/geomtry.png" class="img-fluid"></p>
+<p>A simple feature object is stored as a “sf” object. The image above is a visualization of the “sf” objects.s</p>
 <section id="creating-a-sf-object" class="level3">
 <h3 class="anchored" data-anchor-id="creating-a-sf-object">1.2.1 Creating a “sf” object</h3>
-<p>Let’s create an example “sf” line object. First, we will define the lines themselves with <code>st_linestring()</code></p>
+<p>Let’s create an example “sf” line object. A line object is characterized by points in some coordinate space and connected by a chord we call line.</p>
+<p>First, we will define the lines themselves with <code>st_linestring()</code></p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>lnstr_sfg1 <span class="ot">&lt;-</span> <span class="fu">st_linestring</span>(<span class="fu">matrix</span>(<span class="fu">runif</span>(<span class="dv">10</span>), <span class="at">ncol=</span><span class="dv">2</span>)) <span class="co"># a line with 10 points</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>lnstr_sfg2 <span class="ot">&lt;-</span> <span class="fu">st_linestring</span>(<span class="fu">matrix</span>(<span class="fu">runif</span>(<span class="dv">10</span>), <span class="at">ncol=</span><span class="dv">2</span>)) <span class="co"># ncol = 2 specifies the dimension</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -172,7 +176,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <pre><code>Geometry set for 2 features 
 Geometry type: LINESTRING
 Dimension:     XY
-Bounding box:  xmin: 0.02398291 ymin: 0.06011857 xmax: 0.8518111 ymax: 0.8768601
+Bounding box:  xmin: 0.05797027 ymin: 0.08881913 xmax: 0.8665838 ymax: 0.7407358
 CRS:           NA</code></pre>
 </div>
 </div>
@@ -185,11 +189,11 @@ CRS:           NA</code></pre>
 <pre><code>Simple feature collection with 2 features and 2 fields
 Geometry type: LINESTRING
 Dimension:     XY
-Bounding box:  xmin: 0.02398291 ymin: 0.06011857 xmax: 0.8518111 ymax: 0.8768601
+Bounding box:  xmin: 0.05797027 ymin: 0.08881913 xmax: 0.8665838 ymax: 0.7407358
 CRS:           NA
     id cars_per_hour                      lnstr_sfc
-1 hwy1            78 LINESTRING (0.502105 0.2609...
-2 hwy2            22 LINESTRING (0.6133719 0.840...</code></pre>
+1 hwy1            78 LINESTRING (0.6909605 0.583...
+2 hwy2            22 LINESTRING (0.6775835 0.107...</code></pre>
 </div>
 </div>
 <p>Now we have a data-frame that associates an attribute to a spatial structure rather than another data point!</p>
@@ -219,7 +223,9 @@ CRS:           NA
 <p><img src="vignette_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>Using the sf package, we can then treat these cluster points as coordinate points and draw a polygon.</p>
+<p>Looking at the points above, there is clear some implicit relationship between the point clusters. However, it would be incredibly difficult to identify the cluster if there were more points and more variables.<img src="images/800px-RTree-Visualization-3D.svg.png" class="img-fluid"></p>
+<p>Location gets increasingly difficult to keep track of as we get higher and higher dimensions in our dataframe. In fact, if the variables are in <span class="math display">\[\mathbb{R}^n\]</span> then points will be n-dimensional, lines will be <span class="math display">\[n^2\]</span>-dimensional, and n-dimensional geometries will be <span class="math display">\[n^n\]</span> dimensional. The dimension will get out of hand extremely quickly. Therefore, instead of keeping every coordinate of the location, we can keep the geometries themselves as objects in the dataframe.</p>
+<p>Going back to the previous example, using the sf package, we can then treat these cluster points as coordinate points and draw a polygon.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>shapes <span class="ot">&lt;-</span> dat <span class="sc">%&gt;%</span></span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">st_as_sf</span>(<span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"lon"</span>, <span class="st">"lat"</span>)) <span class="sc">%&gt;%</span></span>
@@ -231,9 +237,10 @@ CRS:           NA
 <p><img src="vignette_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
+<p>Originally, we had 30 data points each with 2 dimensions. After converting these data points into “sf” objects, we only have 3 data point; however, each data point contains 10 locations.</p>
 </section>
-<section id="drawing-something-familiar" class="level2">
-<h2 class="anchored" data-anchor-id="drawing-something-familiar">2.2 Drawing Something Familiar</h2>
+<section id="using-the-sf-object-on-a-geospatial-dataframe" class="level2">
+<h2 class="anchored" data-anchor-id="using-the-sf-object-on-a-geospatial-dataframe">2.2 Using the sf Object on a GeoSpatial Dataframe</h2>
 <p>Using everything we’ve discussed so far, let’s draw a geospatial map. First we will load in a vector of coordinates.</p>
 <div class="cell">
 
@@ -257,7 +264,8 @@ CRS:           NA
 # ℹ 38 more rows</code></pre>
 </div>
 </div>
-<p>What we have just loaded in is a dataframe containing the 48 States (Sorry Hawaii and Alaska) and their latitudes and longitudes. However, a vector of coordinates is hard to manage and no one is going to understand what this string of numbers mean. Therefore, we can convert this vector data into geospatial data by creating a “sf” object.</p>
+<p>What we have just loaded in is a dataframe containing the 48 States (Sorry Hawaii and Alaska) and their latitudes and longitudes of points along their perimeter.</p>
+<p>However, a vector of coordinates is hard to interpretate. Therefore, we can convert this vector data into geospatial data by creating a “sf” object.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>SQ_example <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(us_geo, <span class="at">wkt =</span> <span class="st">"geometry"</span>)</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(SQ_example)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -293,7 +301,7 @@ CRS:           NA
   ..- attr(*, "names")= chr [1:2] "name" "iso_code"</code></pre>
 </div>
 </div>
-<p>Now, the <code>geometry</code> column has been converted into a geo spatial object. The reason why we want to use geospatial objects when dealing with geospatial data is instead of associating every state with a bunch of coordinate points, we give each state one geospatial object. In other words, each entry on in our dataframe is now associated with an area on Earth. In fact, it is easy to see if we just plot it out:</p>
+<p>Now, the <code>geometry</code> column has been converted into a geo spatial object. The reason why we want to use geospatial objects when dealing with geospatial data is instead of associating every state with a bunch of coordinate points, we give each state one geospatial object. In other words, each entry on in our dataframe is now associated with a location Earth. Instead of keeping thousands of points on a graph, we group these points into geometric objects using the technique demonstrated in section 2.1. In fact, it is easy to see if we just plot it out:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> SQ_example[<span class="st">"name"</span>]) <span class="sc">+</span></span>
@@ -303,56 +311,48 @@ CRS:           NA
 <p><img src="vignette_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>The most powerful aspect of geospatial data is that we can give attributes to these individual objects.</p>
+<p>Here, we want to stress how powerful geospatial data structures are when we want to perform visualizations. It takes a significantly less amount of computing power to plot 58 objects as compared to plotting hundreds of thousands of data points/</p>
 </section>
 <section id="geospatial-dataframe-with-attributes" class="level2">
 <h2 class="anchored" data-anchor-id="geospatial-dataframe-with-attributes">3.1 Geospatial Dataframe with Attributes</h2>
+<p>The most important aspect of geospatial data is that we can give attributes to these individual objects. Let’s load in a dataframe consisting of invasive mammals, reptiles, and amphibians in the U.S. from 1950’s to the 2000’s.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>us_species <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/dat_species.csv"</span>)</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>us_species <span class="ot">&lt;-</span> us_species <span class="sc">%&gt;%</span> <span class="fu">filter</span>(group <span class="sc">==</span> <span class="st">"Mammals"</span><span class="sc">|</span> group <span class="sc">==</span> <span class="st">"Reptiles"</span> <span class="sc">|</span> group <span class="sc">==</span> <span class="st">"Amphibians"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>us_species <span class="ot">&lt;-</span> us_species <span class="sc">%&gt;%</span>  <span class="co"># filtering out everything we don't need.</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">&gt;=</span> <span class="st">"1950"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(group <span class="sc">==</span> <span class="st">"Mammals"</span><span class="sc">|</span> group <span class="sc">==</span> <span class="st">"Reptiles"</span> <span class="sc">|</span> group <span class="sc">==</span> <span class="st">"Amphibians"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now, normally we would normally perform some sort of joining operation on our <code>us_geo</code> dataframe and and <code>us_species</code> dataframe to study the relationship between invasive speices in respect to each state. However, geospatial data allows us to associated the invasive species to a location rather than a <code>state</code> variable with a high dimensional vector object.</p>
+<div class="cell">
+
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(us_geo)[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="st">"state"</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>us_geo_merged <span class="ot">&lt;-</span> <span class="fu">merge</span>(us_geo,us_species,<span class="at">by=</span><span class="st">"state"</span>, <span class="at">all=</span>T)</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(us_geo_merged) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check the structure of SQ</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(SQ)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> [1] "state"        "geometry"     "iso_code"     "occurrence"   "sciname"     
- [6] "kingdom"      "group"        "family"       "nativeregion" "centroid"    
-[11] "decimalLat"   "decimalLon"   "dateobserved" "year"         "collector"   
-[16] "recordedBy"   "huc8skm"      "huc10skm"     "huc12skm"    </code></pre>
-</div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>us_geo_merged <span class="ot">&lt;-</span> us_geo_merged[<span class="fu">is.na</span>(us_geo_merged<span class="sc">$</span>geometry) <span class="sc">==</span> <span class="cn">FALSE</span>, ]</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Create an sf object (SQ) from the WKT geometries</span></span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>SQ <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(us_geo_merged, <span class="at">wkt =</span> <span class="st">"geometry"</span>)</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>SQ1 <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(us_geo, <span class="at">wkt =</span> <span class="st">"geometry"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check the structure of SQ</span></span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(SQ)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Classes 'sf' and 'data.frame':  1872 obs. of  19 variables:
- $ state       : chr  "Alabama" "Alabama" "Alabama" "Alabama" ...
- $ iso_code    : chr  "US-AL" "US-AL" "US-AL" "US-AL" ...
- $ occurrence  : num  8.91e+08 6.24e+08 6.24e+08 6.24e+08 NA ...
- $ sciname     : chr  "Myocastor coypus" "Myocastor coypus" "Myocastor coypus" "Myocastor coypus" ...
- $ kingdom     : chr  "Animal" "Animal" "Animal" "Animal" ...
- $ group       : chr  "Mammals" "Mammals" "Mammals" "Mammals" ...
- $ family      : chr  "Myocastoridae" "Myocastoridae" "Myocastoridae" "Myocastoridae" ...
+<pre><code>Classes 'sf' and 'data.frame':  1794 obs. of  19 variables:
+ $ state       : chr  "Alabama" "Alabama" "Alabama" "Arizona" ...
+ $ iso_code    : chr  "US-AL" "US-AL" "US-AL" "US-AZ" ...
+ $ occurrence  : num  8.91e+08 6.24e+08 6.24e+08 NA 9.20e+08 ...
+ $ sciname     : chr  "Myocastor coypus" "Myocastor coypus" "Myocastor coypus" NA ...
+ $ kingdom     : chr  "Animal" "Animal" "Animal" NA ...
+ $ group       : chr  "Mammals" "Mammals" "Mammals" NA ...
+ $ family      : chr  "Myocastoridae" "Myocastoridae" "Myocastoridae" NA ...
  $ nativeregion: chr  NA NA NA NA ...
- $ centroid    : chr  "N" "N" "N" "N" ...
- $ decimalLat  : num  30.7 30.7 30.8 30.7 NA ...
- $ decimalLon  : num  -87.9 -88.1 -87.8 -87.9 NA ...
+ $ centroid    : chr  "N" "N" "N" NA ...
+ $ decimalLat  : num  30.7 30.8 30.7 NA 34.3 ...
+ $ decimalLon  : num  -87.9 -87.8 -88.1 NA -91.4 ...
  $ dateobserved: chr  NA NA NA NA ...
- $ year        : num  2013 1956 1956 1949 NA ...
- $ collector   : chr  "iNaturalist research-grade observations" "United States Geological Survey Nonindigenous Aquatic Species Database" "United States Geological Survey Nonindigenous Aquatic Species Database" "United States Geological Survey Nonindigenous Aquatic Species Database" ...
+ $ year        : num  2013 1956 1956 NA 1983 ...
+ $ collector   : chr  "iNaturalist research-grade observations" "United States Geological Survey Nonindigenous Aquatic Species Database" "United States Geological Survey Nonindigenous Aquatic Species Database" NA ...
  $ recordedBy  : chr  "Michael P. Riggs" NA NA NA ...
- $ huc8skm     : num  2363 2363 2384 2363 NA ...
- $ huc10skm    : num  393 393 672 393 NA ...
- $ huc12skm    : num  150.3 76.9 128 150.3 NA ...
- $ geometry    :sfc_GEOMETRY of length 1872; first list element: List of 7
+ $ huc8skm     : num  2363 2384 2363 NA 3524 ...
+ $ huc10skm    : num  393 672 393 NA 343 ...
+ $ huc12skm    : num  150.3 128 76.9 NA 87.1 ...
+ $ geometry    :sfc_GEOMETRY of length 1794; first list element: List of 7
   ..$ :List of 1
   .. ..$ : num [1:15, 1:2] -88.1 -88.1 -88 -88 -88 ...
   ..$ :List of 1
@@ -372,35 +372,76 @@ CRS:           NA
  - attr(*, "agr")= Factor w/ 3 levels "constant","aggregate",..: NA NA NA NA NA NA NA NA NA NA ...
   ..- attr(*, "names")= chr [1:18] "state" "iso_code" "occurrence" "sciname" ...</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(us_geo_merged<span class="sc">$</span>sciname)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(us_geo_merged<span class="sc">$</span>sciname)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] "Myocastor coypus"               NA                              
  [3] "Hydrochoerus hydrochaeris"      "Osteopilus septentrionalis"    
- [5] "Acrochordus javanicus"          "Eunectes notaeus"              
- [7] "Caiman crocodilus"              "Eleutherodactylus planirostris"
+ [5] "Eleutherodactylus planirostris" "Caiman crocodilus"             
+ [7] "Acrochordus javanicus"          "Eunectes notaeus"              
  [9] "Xenopus laevis"                 "Bombina orientalis"            </code></pre>
 </div>
 </div>
+<p>Notice, the <code>geometry</code> column is consisted of a “sf” object whereas previously, it was a state with a vector of coordinates. However, each data entry is also given a collection of attributes such as <code>sciname</code>, <code>kingdom</code>, <code>occurrence</code>, and etc. Let’s see how we can reference these attributes within each state (“sf” object). Within our <code>us_species</code> data frame, there is a species named <code>Hydrochoerus hydrochaeris</code> more commonly known as the capybara.</p>
+<p><img src="images/capybara-square-1.jpg.optimal.jpg" class="img-fluid" width="500"></p>
+<p>By indexing on species name, we can reference the capybara directly by location in the “sf” objects.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>SQ_f <span class="ot">&lt;-</span> SQ <span class="sc">%&gt;%</span></span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(sciname <span class="sc">==</span> <span class="st">"Hydrochoerus hydrochaeris"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">&lt;=</span> <span class="dv">2015</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(state) <span class="sc">%&gt;%</span> </span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">occurrence =</span> <span class="fu">sum</span>(occurrence))</span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Create a ggplot object</span></span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add the filtered sf object as a layer</span></span>
-<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> SQ1[<span class="st">"state"</span>]) <span class="sc">+</span></span>
-<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> SQ_f, <span class="fu">aes</span>(<span class="at">fill =</span> occurrence)) <span class="sc">+</span></span>
-<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Customize the plot as needed</span></span>
-<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Occurrences Plot"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>SQ_f <span class="ot">&lt;-</span> SQ <span class="sc">%&gt;%</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(sciname <span class="sc">==</span> <span class="st">"Hydrochoerus hydrochaeris"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">&lt;=</span> <span class="dv">2015</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(state) <span class="sc">%&gt;%</span> </span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">occurrence =</span> <span class="fu">sum</span>(occurrence))</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Create a ggplot object</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Add the filtered sf object as a layer</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> SQ1[<span class="st">"state"</span>]) <span class="sc">+</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> SQ_f, <span class="fu">aes</span>(<span class="at">fill =</span> occurrence)) <span class="sc">+</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Customize the plot as needed</span></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Occurrences Plot"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <p><img src="vignette_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
+<p>As one can see the prowess of “sf” objects is extremely great in the context of visualization. Each location is treated as an individual data point; thus, we are filtering and parse the data in terms of the locations themselves. In addition to having a structural advantage compared to their vector counter parts, the time it takes to process “sf” objects is also significantly faster. In order to demonstrate this, we have created a simple <a href="https://yibster.shinyapps.io/gisshinyapp/">ShinyApp</a> to illustrate the use of geospatial data structures in data visualization.</p>
+</section>
+<section id="modeling-with-geospatial-data-spatial-poisson-model" class="level2">
+<h2 class="anchored" data-anchor-id="modeling-with-geospatial-data-spatial-poisson-model">4.1 Modeling with Geospatial Data: Spatial Poisson Model</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(spdep)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can predict the number appearances of a species using spatial poisson model. Here we will explain how it works and provide some example codes about the model building, you can copy and paste them to try!</p>
+<section id="model-preparation" class="level3">
+<h3 class="anchored" data-anchor-id="model-preparation">4.1.2 Model Preparation</h3>
+<p>First, we use spatial weights matrix to represent the relationships between states. The matrix captures the neighbor states of the state we want to predict on, and their correlation:</p>
+<p><code>{r. eval = FALSE} # Create spatial weights matrix  w &lt;- knn2nb(knearneigh(st_coordinates(your_dataset)))  W &lt;- nb2listw(w)</code></p>
+<p><code>st_coordinates()</code>: This extracts the coordinates from the ‘geometry’ column of the <strong><code>your_dataset</code></strong>. It gives a matrix containing the X and Y coordinates for each observation. If you have points, these will be the point coordinates; if you have polygons, these will be the centroid coordinates.</p>
+<p><code>knearneigh()</code>: This function computes the k-nearest neighbors for each point based on Euclidean distance. It returns a “knn” object that represents the k-nearest neighbors relationships. The <strong><code>k</code></strong> parameter is not specified in this code.</p>
+<p><code>nb2listw()</code>: This function converts the knn object into a spatial weights matrix using a k-nearest neighbor rule. It creates a binary spatial weights matrix where neighboring points are considered neighbors. The resulting object <strong><code>w</code></strong> is a representation of the neighborhood relationships among the observations.</p>
+</section>
+<section id="model-building" class="level3">
+<h3 class="anchored" data-anchor-id="model-building">4.1.2 Model Building</h3>
+<p>Now, we can fit a spatial Poisson on the dataset</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>spatial_poisson_model <span class="ot">&lt;-</span> <span class="fu">errorsarlm</span>(count <span class="sc">~</span> <span class="dv">1</span>, <span class="at">data =</span> frog_data_sf, <span class="at">W =</span> W, <span class="at">family =</span> poisson)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong><code>W = W:</code></strong> It means the spatial weights matrix to account for spatial autocorrelation, in this case W is generated from knn.</p>
+</section>
+<section id="prediction" class="level3">
+<h3 class="anchored" data-anchor-id="prediction">4.1.3 Prediction</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Predict occurrences using the spatial Poisson model</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>predictions <span class="ot">&lt;-</span> <span class="fu">predict</span>(spatial_poisson_model, <span class="at">newdata =</span> new_data, <span class="at">type =</span> <span class="st">"response"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>More information:</p>
+<p><a href="https://apwheele.github.io/Class_CrimeMapping/08_Tutorial_R_SpatRegression.html" class="uri">https://apwheele.github.io/Class_CrimeMapping/08_Tutorial_R_SpatRegression.html</a></p>
+</section>
+</section>
+<section id="modeling-on-our-capybara-data" class="level2">
+<h2 class="anchored" data-anchor-id="modeling-on-our-capybara-data">4.2 Modeling on Our Capybara Data</h2>
 </section>
 
 </main>

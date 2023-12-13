@@ -26,7 +26,6 @@ First, we use spatial weights matrix to represent the relationships between stat
 
 `nb2listw()`: This function converts the knn object into a spatial weights matrix using a k-nearest neighbor rule. It creates a binary spatial weights matrix where neighboring points are considered neighbors. The resulting object **`w`** is a representation of the neighborhood relationships among the observations.
 
-<br>
 
 #### **2. Model Building**
 
@@ -37,8 +36,6 @@ spatial_poisson_model <- errorsarlm(count ~ 1, data = frog_data_sf, W = W, famil
 ```
 
 **`W = W:`** It means the spatial weights matrix to account for spatial autocorrelation, in this case W is generated from knn.
-
-<br>
 
 #### 3. Prediction
 
