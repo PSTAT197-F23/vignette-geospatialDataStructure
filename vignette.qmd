@@ -243,7 +243,9 @@ Location gets increasingly difficult to keep track of as we get higher and highe
 Going back to the previous example, using the sf package, we can then treat these cluster points as coordinate points and draw a polygon. The reason why we call is the border points is that these vectors quite literally draw the borders of the area that encapsulates the data points.
 
 ```{r}
+# Reference: https://gis.stackexchange.com/questions/452647/uneven-polygon-from-points-with-sf-package-r
 # Use the concave pacakge to visualize the sf object after grouping
+
 x <- P$Fr[1]
 
 final_P <- lapply(unique(P$Fr), function(x) {
