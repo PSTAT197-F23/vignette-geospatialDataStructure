@@ -19,7 +19,7 @@ Yibo Liang, Pippa Lin, Chris Zhao
 - [Vignette Document](https://github.com/PSTAT197-F23/vignette-geospatialDataStructure/blob/main/vignette.html)
 - [Scripts](https://github.com/PSTAT197-F23/vignette-geospatialDataStructure/tree/main/scripts)
 - [Datasets](https://github.com/PSTAT197-F23/vignette-geospatialDataStructure/tree/main/data)
-- [ShinyApp](https://github.com/PSTAT197-F23/vignette-geospatialDataStructure/tree/main/GISshinyApp)
+- [ShinyApp Script](https://github.com/PSTAT197-F23/vignette-geospatialDataStructure/tree/main/GISshinyApp)
 
 ## Resources:
 
